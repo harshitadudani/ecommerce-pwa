@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>MyShop | Cart</title>
+</head>
+<body>
+  <header>
+    <h1>🛍️ MyShop</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 MyShop. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const cartItems = document.getElementById("cartItems");
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (cart.length === 0) {
+      cartItems.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += item.price;
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.innerHTML = `
+          <h3>${item.name}</h3>
+          <p>Price: ₹${item.price}</p>
+        `;
+        cartItems.appendChild(div);
+      });
+      const totalEl = document.createElement("p");
+      totalEl.innerHTML = `<strong>Total: ₹${total}</strong>`;
+      cartItems.appendChild(totalEl);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4CAF50" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <title>MyShop | Home</title>
+</head>
+<body>
+  <header>
+    <h1>🛍️ MyShop</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Welcome to MyShop</h2>
+    <p>Your favorite online store for everything you need!</p>
+    <a class="btn" href="products.html">Start Shopping</a>
+
+    <!-- 🔘 Install Button (for A2HS) -->
+    <button id="installBtn" style="display: none; margin-top: 20px;">➕ Install App</button>
+
+    <!-- 🔔 Push Notification Button -->
+    <button id="notifyBtn" style="margin-top: 20px;">🔔 Enable Notifications</button>
+
+    <!-- 🧪 Experiment 9 Buttons -->
+    <div style="margin-top: 20px;">
+      <button id="fetchBtn">🌐 Test Fetch Event</button>
+      <button id="pushBtn">🔔 Test Push Notification</button>
+      <button id="syncBtn">🔁 Test Sync Event</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 MyShop. All rights reserved.</p>
+  </footer>
+
+  <!-- 🧠 Script for SW, A2HS, Notifications, Push, Fetch, Sync -->
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    const notifyBtn = document.getElementById('notifyBtn');
+
+    // A2HS logic
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          console.log(choiceResult.outcome === 'accepted' ? '✅ A2HS accepted' : '❌ A2HS dismissed');
+          deferredPrompt = null;
+        });
+      });
+    });
+
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('serviceworker.js')
+        .then(reg => console.log("✅ SW Registered", reg))
+        .catch(err => console.log("❌ SW Failed", err));
+    }
+
+    // Push Notification via Enable Button
+    notifyBtn.addEventListener('click', () => {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg) {
+              reg.showNotification('🔔 Welcome to MyShop!', {
+                body: 'Thanks for enabling notifications!',
+                icon: 'images/icon-192x192.png',
+                badge: 'images/icon-192x192.png',
+                vibrate: [200, 100, 200],
+                tag: 'myshop-welcome'
+              });
+            }
+          });
+        } else {
+          alert("Notifications are blocked or denied.");
+        }
+      });
+    });
+
+    // 🌐 FETCH EVENT TEST
+    document.getElementById('fetchBtn').addEventListener('click', () => {
+      fetch('index.html')
+        .then(res => res.text())
+        .then(data => {
+          console.log("✅ Fetch event test successful.");
+          alert("Fetched index.html — check DevTools Network tab.");
+        });
+    });
+
+    // 🔔 PUSH EVENT TEST
+    document.getElementById('pushBtn').addEventListener('click', () => {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg) {
+          reg.showNotification('📬 Test Push', {
+            body: 'This is a manual push notification.',
+            icon: 'images/icon-192x192.png',
+            badge: 'images/icon-192x192.png'
+          });
+        }
+      });
+    });
+
+    // 🔁 SYNC EVENT TEST
+    document.getElementById('syncBtn').addEventListener('click', () => {
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(swReg => {
+          return swReg.sync.register('syncTestTag');
+        }).then(() => {
+          alert("✅ Sync registered! Go offline and back online to trigger.");
+        }).catch(err => {
+          alert("❌ Sync registration failed.");
+          console.error(err);
+        });
+      } else {
+        alert("Background Sync not supported in this browser.");
+      }
+    });
+  </script>
+</body>
+</html>

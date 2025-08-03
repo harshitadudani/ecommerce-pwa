@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>MyShop | Products</title>
+</head>
+<body>
+  <header>
+    <h1>🛍️ MyShop</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Our Products</h2>
+    <div class="product-grid" id="productList">
+      <!-- Products will be rendered via JS -->
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 MyShop. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const products = [
+      { id: 1, name: "Wireless Headphones", price: 1499, image: "https://via.placeholder.com/150" },
+      { id: 2, name: "Smart Watch", price: 2999, image: "https://via.placeholder.com/150" },
+      { id: 3, name: "Bluetooth Speaker", price: 799, image: "https://via.placeholder.com/150" }
+    ];
+
+    const productList = document.getElementById("productList");
+
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productList.appendChild(card);
+    });
+
+    function addToCart(productId) {
+      const selectedProduct = products.find(p => p.id === productId);
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push(selectedProduct);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${selectedProduct.name} added to cart!`);
+    }
+  </script>
+</body>
+</html>
